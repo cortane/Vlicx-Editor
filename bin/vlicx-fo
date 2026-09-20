@@ -1,0 +1,21 @@
+#!/bin/sh
+# vlicx-fo — Open a folder in Vlicx editor with update check
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+VERSION_FILE="$HOME/.vlicx-version"
+if [ -f "$VERSION_FILE" ] && command -v curl >/dev/null 2>&1; then
+    LOCAL_SHA=$(cat "$VERSION_FILE" 2>/dev/null | tr -d '\r\n ')
+    REMOTE_SHA=$(curl -s -m 2 "https://api.github.com/repos/cortane/Vlicx-Editor/commits/main" | grep '"sha"' | head -n 1 | cut -d '"' -f 4 || true)
+    if [ -n "$REMOTE_SHA" ] && [ -n "$LOCAL_SHA" ] && [ "$LOCAL_SHA" != "$REMOTE_SHA" ]; then
+        printf "\033[1;33mVlicxEditorに更新があります、更新のために curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.sh | sh を実行してください！\033[0m\n"
+        sleep 1
+    fi
+fi
+
+if [ -x "$SCRIPT_DIR/vlicx" ]; then
+    exec "$SCRIPT_DIR/vlicx" --mode folder "$@"
+elif [ -x "$SCRIPT_DIR/../vlicx" ]; then
+    exec "$SCRIPT_DIR/../vlicx" --mode folder "$@"
+else
+    exec vlicx --mode folder "$@"
+fi
