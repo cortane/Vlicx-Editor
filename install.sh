@@ -1,8 +1,5 @@
 #!/bin/sh
-# Vlicx Editor — Stylish Auto Clean Installer & Updater
-# Usage:
-#   curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.sh | sh
-
+# Vlicx Editor — Clean Installer & Updater
 set -e
 
 PREFIX="${1:-/usr/local}"
@@ -10,27 +7,23 @@ REPO_URL="https://github.com/cortane/Vlicx-Editor"
 TAR_URL="https://github.com/cortane/Vlicx-Editor/archive/refs/heads/main.tar.gz"
 LOG_FILE="/tmp/vlicx-install.log"
 
-# ANSI Color Tokens
-CYAN='\033[1;36m'
-MAGENTA='\033[1;35m'
-GREEN='\033[1;32m'
-YELLOW='\033[1;33m'
-WHITE='\033[1;37m'
-BLUE='\033[1;34m'
-DIM='\033[2m'
-RESET='\033[0m'
+START_TIME=$(date +%s)
+
+# Helper function for colored printf
+color_print() {
+    printf "%b" "$1"
+}
 
 # Clear log
 > "$LOG_FILE"
 
 # Draw Banner
 clear 2>/dev/null || true
-echo ""
-echo "${CYAN}╭──────────────────────────────────────────────────────────╮${RESET}"
-echo "${CYAN}│${RESET}  ${MAGENTA}🚀  VLICX EDITOR${RESET}  — ${WHITE}Auto Clean Installer & Updater${RESET}   ${CYAN}│${RESET}"
-echo "${CYAN}│${RESET}  ${DIM}Lightweight & High-Performance Terminal Editor${RESET}          ${CYAN}│${RESET}"
-echo "${CYAN}╰──────────────────────────────────────────────────────────╯${RESET}"
-echo ""
+color_print "\n"
+color_print "\033[1;36m+----------------------------------------------------------+\033[0m\n"
+color_print "\033[1;36m|\033[0m  \033[1;35mVLICX EDITOR\033[0m - \033[1;37mAuto Clean Installer & Updater\033[0m          \033[1;36m|\033[0m\n"
+color_print "\033[1;36m|\033[0m  \033[2mLightweight & High-Performance Terminal Editor\033[0m          \033[1;36m|\033[0m\n"
+color_print "\033[1;36m+----------------------------------------------------------+\033[0m\n\n"
 
 # Progress bar function
 draw_bar() {
@@ -43,31 +36,30 @@ draw_bar() {
     bar=""
     i=0
     while [ $i -lt $filled ]; do
-        bar="${bar}█"
+        bar="${bar}#"
         i=$((i + 1))
     done
     i=0
     while [ $i -lt $empty ]; do
-        bar="${bar}░"
+        bar="${bar}-"
         i=$((i + 1))
     done
 
-    printf "\r${CYAN}[%s]${RESET} ${GREEN}%3d%%${RESET} ${WHITE}%s${RESET} \033[K" "$bar" "$pct" "$text"
+    printf "\r\033[1;36m[%s]\033[0m \033[1;32m%3d%%\033[0m \033[1;37m%s\033[0m \033[K" "$bar" "$pct" "$text"
 }
 
 # Step 1: Cleanup
-echo "${YELLOW}▶ [1/4] 🧹 古いバイナリ・キャッシュの清掃中...${RESET}"
-draw_bar 10 "旧バイナリとキャッシュの削除..."
+color_print "\033[1;33m[1/4] クリーンアップ実行中...\033[0m\n"
+draw_bar 10 "旧バイナリとキャッシュの削除中..."
 rm -f /usr/local/bin/vlix* /usr/local/bin/vlicx* /usr/bin/vlix* /usr/bin/vlicx* >> "$LOG_FILE" 2>&1 || true
 rm -rf "$HOME/.vlicx-jisyo" >> "$LOG_FILE" 2>&1 || true
 hash -r >> "$LOG_FILE" 2>&1 || true
 draw_bar 25 "クリーンアップ完了"
-echo ""
+color_print "\n"
 sleep 0.2
 
 # Step 2: Check Alpine dependencies
-echo ""
-echo "${YELLOW}▶ [2/4] 📦 ビルド環境・依存パッケージ確認...${RESET}"
+color_print "\n\033[1;33m[2/4] 依存パッケージの確認...\033[0m\n"
 draw_bar 35 "パッケージマネージャの検査中..."
 if command -v apk >/dev/null 2>&1; then
     MISSING_PKGS=""
@@ -82,12 +74,11 @@ if command -v apk >/dev/null 2>&1; then
     fi
 fi
 draw_bar 50 "依存パッケージの準備完了"
-echo ""
+color_print "\n"
 sleep 0.2
 
 # Step 3: Source acquisition
-echo ""
-echo "${YELLOW}▶ [3/4] 🌐 GitHub から最新ソースコードの取得...${RESET}"
+color_print "\n\033[1;33m[3/4] GitHub から最新ソースコード取得中...\033[0m\n"
 TMP_DIR=""
 HERE=""
 
@@ -97,7 +88,7 @@ if [ -f "./src/main.c" ] && [ -f "./Makefile" ]; then
 else
     TMP_DIR="/tmp/vlicx-build-$$"
     mkdir -p "$TMP_DIR"
-    draw_bar 60 "最新アーカイブをダウンロード中..."
+    draw_bar 60 "最新アーカイブのダウンロード中..."
     curl -fsSL "$TAR_URL" | tar -xz -C "$TMP_DIR" >> "$LOG_FILE" 2>&1
 
     MAKEFILE_LOC=$(find "$TMP_DIR" -path "*/vlicx/Makefile" 2>/dev/null | head -n 1)
@@ -108,20 +99,18 @@ else
         HERE=$(dirname "$MAKEFILE_LOC")
     fi
     if [ -z "$HERE" ] || [ ! -f "$HERE/Makefile" ]; then
-        echo ""
-        echo "${MAGENTA}エラー: ダウンロードしたアーカイブ内に Makefile が見つかりませんでした。${RESET}"
+        color_print "\n\033[1;35mエラー: Makefile が見つかりませんでした。\033[0m\n"
         exit 1
     fi
     draw_bar 70 "ソースコードの準備完了"
 fi
-echo ""
+color_print "\n"
 sleep 0.2
 
 # Step 4: Build and Install
-echo ""
-echo "${YELLOW}▶ [4/4] ⚡ Vlicx のコンパイル＆インストール中...${RESET}"
+color_print "\n\033[1;33m[4/4] Vlicx のコンパイル & インストール中...\033[0m\n"
 cd "$HERE"
-draw_bar 75 "古いオブジェクトファイルのクリーンアップ..."
+draw_bar 75 "ビルドディレクトリの再構築中..."
 make clean >> "$LOG_FILE" 2>&1
 
 draw_bar 85 "コンパイル中 (C11 + ncursesw)..."
@@ -147,18 +136,27 @@ if [ -n "$TMP_DIR" ] && [ -d "$TMP_DIR" ]; then
 fi
 
 hash -r >> "$LOG_FILE" 2>&1 || true
-draw_bar 100 "すべての処理が完了しました！"
-echo ""
-echo ""
+draw_bar 100 "すべての処理が正常に完了しました"
+color_print "\n\n"
+
+# Calculate Elapsed Time
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+MINS=$((ELAPSED / 60))
+SECS=$((ELAPSED % 60))
+
+TIME_STR=""
+if [ $MINS -gt 0 ]; then
+    TIME_STR="${MINS}分${SECS}秒"
+else
+    TIME_STR="${SECS}秒"
+fi
 
 # Success Summary Card
-echo "${GREEN}✨ ────────────────────────────────────────────────────────── ✨${RESET}"
-echo "${GREEN}   🎉  VLICX EDITOR HAS BEEN SUCCESSFULLY INSTALLED!         ${RESET}"
-echo "${GREEN}✨ ────────────────────────────────────────────────────────── ✨${RESET}"
-echo ""
-echo "   ${CYAN}📍 バイナリ位置${RESET} : ${WHITE}$PREFIX/bin/vlicx${RESET}"
-echo "   ${CYAN}📁 フォルダ起動${RESET} : ${WHITE}vlicx-fo <ディレクトリ>${RESET}"
-echo "   ${CYAN}📄 ファイル起動${RESET} : ${WHITE}vlicx-fi <ファイル>${RESET}"
-echo ""
-echo "   ${MAGENTA}🚀 準備完了！ vlicx-fo コマンドでエディタをお楽しみください。${RESET}"
-echo ""
+color_print "\033[1;32m==========================================================\033[0m\n"
+color_print "\033[1;32m  Vlicx Editor のインストールが完了しました\033[0m\n"
+color_print "\033[1;32m==========================================================\033[0m\n\n"
+color_print "  \033[1;36mバイナリ位置\033[0m   : \033[1;37m$PREFIX/bin/vlicx\033[0m\n"
+color_print "  \033[1;36mフォルダ起動\033[0m   : \033[1;37mvlicx-fo <ディレクトリ>\033[0m\n"
+color_print "  \033[1;36mファイル起動\033[0m   : \033[1;37mvlicx-fi <ファイル>\033[0m\n"
+color_print "  \033[1;36m処理所要時間\033[0m   : \033[1;33m$TIME_STR\033[0m\n\n"
