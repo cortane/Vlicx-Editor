@@ -536,7 +536,11 @@ static void check_update_notice(void) {
         while (rend > rp && (*rend == ' ' || *rend == '\r' || *rend == '\n')) { *rend = '\0'; rend--; }
 
         if (*rp && strcmp(p, rp) != 0) {
-            fprintf(stderr, "\033[1;33mVlicxEditorに更新があります、更新のために curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.sh | sh を実行してください！\033[0m\n");
+            fprintf(stderr, "\033[1;33m╭──────────────────────────────────────────────────────────────────────────────╮\033[0m\n");
+            fprintf(stderr, "\033[1;33m│ 💡 VlicxEditor に最新バージョンの更新があります！                              │\033[0m\n");
+            fprintf(stderr, "\033[1;33m│   更新コマンド:                                                              │\033[0m\n");
+            fprintf(stderr, "\033[1;36m│   curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.sh | sh │\033[0m\n");
+            fprintf(stderr, "\033[1;33m╰──────────────────────────────────────────────────────────────────────────────╯\033[0m\n");
         }
     }
     pclose(pipe);

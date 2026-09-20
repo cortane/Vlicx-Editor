@@ -1,30 +1,74 @@
 #!/bin/sh
-# Vlicx Editor — Clean Installer & Updater
-# Usage (One-liner from GitHub):
+# Vlicx Editor — Stylish Auto Clean Installer & Updater
+# Usage:
 #   curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.sh | sh
-# Or locally:
-#   ./install.sh
 
 set -e
 
 PREFIX="${1:-/usr/local}"
 REPO_URL="https://github.com/cortane/Vlicx-Editor"
-RAW_REPO="https://raw.githubusercontent.com/cortane/Vlicx-Editor/main"
 TAR_URL="https://github.com/cortane/Vlicx-Editor/archive/refs/heads/main.tar.gz"
+LOG_FILE="/tmp/vlicx-install.log"
 
-echo "\033[1;36m=======================================================\033[0m"
-echo "\033[1;36m   Vlicx Editor — Auto Clean Installer & Updater      \033[0m"
-echo "\033[1;36m=======================================================\033[0m"
+# ANSI Color Tokens
+CYAN='\033[1;36m'
+MAGENTA='\033[1;35m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+WHITE='\033[1;37m'
+BLUE='\033[1;34m'
+DIM='\033[2m'
+RESET='\033[0m'
 
-# Step 1: Cleanup old binary files and PATH entries
+# Clear log
+> "$LOG_FILE"
+
+# Draw Banner
+clear 2>/dev/null || true
 echo ""
-echo "\033[1;33m[1/5] Cleaning up old binaries and temporary files...\033[0m"
-rm -f /usr/local/bin/vlix* /usr/local/bin/vlicx* /usr/bin/vlix* /usr/bin/vlicx* 2>/dev/null || true
-hash -r 2>/dev/null || true
-
-# Step 2: Ensure build dependencies (Alpine Linux)
+echo "${CYAN}╭──────────────────────────────────────────────────────────╮${RESET}"
+echo "${CYAN}│${RESET}  ${MAGENTA}🚀  VLICX EDITOR${RESET}  — ${WHITE}Auto Clean Installer & Updater${RESET}   ${CYAN}│${RESET}"
+echo "${CYAN}│${RESET}  ${DIM}Lightweight & High-Performance Terminal Editor${RESET}          ${CYAN}│${RESET}"
+echo "${CYAN}╰──────────────────────────────────────────────────────────╯${RESET}"
 echo ""
-echo "\033[1;33m[2/5] Checking build dependencies...\033[0m"
+
+# Progress bar function
+draw_bar() {
+    pct=$1
+    text=$2
+    cols=30
+    filled=$((pct * cols / 100))
+    empty=$((cols - filled))
+
+    bar=""
+    i=0
+    while [ $i -lt $filled ]; do
+        bar="${bar}█"
+        i=$((i + 1))
+    done
+    i=0
+    while [ $i -lt $empty ]; do
+        bar="${bar}░"
+        i=$((i + 1))
+    done
+
+    printf "\r${CYAN}[%s]${RESET} ${GREEN}%3d%%${RESET} ${WHITE}%s${RESET} \033[K" "$bar" "$pct" "$text"
+}
+
+# Step 1: Cleanup
+echo "${YELLOW}▶ [1/4] 🧹 古いバイナリ・キャッシュの清掃中...${RESET}"
+draw_bar 10 "旧バイナリとキャッシュの削除..."
+rm -f /usr/local/bin/vlix* /usr/local/bin/vlicx* /usr/bin/vlix* /usr/bin/vlicx* >> "$LOG_FILE" 2>&1 || true
+rm -rf "$HOME/.vlicx-jisyo" >> "$LOG_FILE" 2>&1 || true
+hash -r >> "$LOG_FILE" 2>&1 || true
+draw_bar 25 "クリーンアップ完了"
+echo ""
+sleep 0.2
+
+# Step 2: Check Alpine dependencies
+echo ""
+echo "${YELLOW}▶ [2/4] 📦 ビルド環境・依存パッケージ確認...${RESET}"
+draw_bar 35 "パッケージマネージャの検査中..."
 if command -v apk >/dev/null 2>&1; then
     MISSING_PKGS=""
     for pkg in gcc musl-dev ncurses-dev make curl tar; do
@@ -33,27 +77,29 @@ if command -v apk >/dev/null 2>&1; then
         fi
     done
     if [ -n "$MISSING_PKGS" ]; then
-        echo "Installing missing packages:$MISSING_PKGS"
-        apk add --no-cache $MISSING_PKGS
-    else
-        echo "All required Alpine packages are installed."
+        draw_bar 45 "不足パッケージを自動導入中 ($MISSING_PKGS)..."
+        apk add --no-cache $MISSING_PKGS >> "$LOG_FILE" 2>&1
     fi
 fi
+draw_bar 50 "依存パッケージの準備完了"
+echo ""
+sleep 0.2
 
 # Step 3: Source acquisition
 echo ""
-echo "\033[1;33m[3/5] Acquiring source code...\033[0m"
+echo "${YELLOW}▶ [3/4] 🌐 GitHub から最新ソースコードの取得...${RESET}"
 TMP_DIR=""
 HERE=""
 
 if [ -f "./src/main.c" ] && [ -f "./Makefile" ]; then
     HERE="$(pwd)"
-    echo "Using local source tree at: $HERE"
+    draw_bar 65 "ローカルソースツリーを使用"
 else
     TMP_DIR="/tmp/vlicx-build-$$"
     mkdir -p "$TMP_DIR"
-    echo "Downloading latest Vlicx source archive from GitHub..."
-    curl -fsSL "$TAR_URL" | tar -xzv -C "$TMP_DIR"
+    draw_bar 60 "最新アーカイブをダウンロード中..."
+    curl -fsSL "$TAR_URL" | tar -xz -C "$TMP_DIR" >> "$LOG_FILE" 2>&1
+
     MAKEFILE_LOC=$(find "$TMP_DIR" -path "*/vlicx/Makefile" 2>/dev/null | head -n 1)
     if [ -z "$MAKEFILE_LOC" ]; then
         MAKEFILE_LOC=$(find "$TMP_DIR" -name "Makefile" 2>/dev/null | head -n 1)
@@ -62,63 +108,57 @@ else
         HERE=$(dirname "$MAKEFILE_LOC")
     fi
     if [ -z "$HERE" ] || [ ! -f "$HERE/Makefile" ]; then
-        echo "Error: Could not locate Makefile in downloaded archive."
+        echo ""
+        echo "${MAGENTA}エラー: ダウンロードしたアーカイブ内に Makefile が見つかりませんでした。${RESET}"
         exit 1
     fi
-    echo "Located source tree at: $HERE"
+    draw_bar 70 "ソースコードの準備完了"
 fi
+echo ""
+sleep 0.2
 
 # Step 4: Build and Install
 echo ""
-echo "\033[1;33m[4/5] Building and installing Vlicx...\033[0m"
+echo "${YELLOW}▶ [4/4] ⚡ Vlicx のコンパイル＆インストール中...${RESET}"
 cd "$HERE"
-make clean
-make
-make install PREFIX="$PREFIX"
+draw_bar 75 "古いオブジェクトファイルのクリーンアップ..."
+make clean >> "$LOG_FILE" 2>&1
 
-# Install Japanese SKK dictionary
-JISYO_DIR="$HOME/.vlicx-jisyo"
-JISYO_SRC="$HERE/src/prtxt"
-JISYO_DST="$JISYO_DIR/prtxt"
+draw_bar 85 "コンパイル中 (C11 + ncursesw)..."
+make >> "$LOG_FILE" 2>&1
 
-mkdir -p "$JISYO_DIR"
-if [ -f "$JISYO_SRC" ]; then
-    cp "$JISYO_SRC" "$JISYO_DST"
-    echo "Installed Japanese dictionary to: $JISYO_DST"
-fi
+draw_bar 95 "バイナリのインストール中 (/usr/local/bin)..."
+make install PREFIX="$PREFIX" >> "$LOG_FILE" 2>&1
 
-# Step 5: Save version SHA for auto-update checks
-echo ""
-echo "\033[1;33m[5/5] Recording installed version info...\033[0m"
+# Record version
 VERSION_FILE="$HOME/.vlicx-version"
-REMOTE_SHA=""
-
 if command -v curl >/dev/null 2>&1; then
     REMOTE_SHA=$(curl -s -m 5 "https://api.github.com/repos/cortane/Vlicx-Editor/commits/main" | grep '"sha"' | head -n 1 | cut -d '"' -f 4 || true)
 fi
 
 if [ -n "$REMOTE_SHA" ]; then
     echo "$REMOTE_SHA" > "$VERSION_FILE"
-    echo "Recorded commit SHA: ${REMOTE_SHA:0:7}"
 else
     date +%Y%m%d%H%M%S > "$VERSION_FILE"
 fi
 
-# Cleanup temp dir if created
 if [ -n "$TMP_DIR" ] && [ -d "$TMP_DIR" ]; then
     rm -rf "$TMP_DIR"
 fi
 
-hash -r 2>/dev/null || true
-
+hash -r >> "$LOG_FILE" 2>&1 || true
+draw_bar 100 "すべての処理が完了しました！"
 echo ""
-echo "\033[1;32m=======================================================\033[0m"
-echo "\033[1;32m  Vlicx Editor installation completed successfully!     \033[0m"
-echo "\033[1;32m=======================================================\033[0m"
-echo "Installed binaries:"
-echo "  - $PREFIX/bin/vlicx"
-echo "  - $PREFIX/bin/vlicx-fo"
-echo "  - $PREFIX/bin/vlicx-fi"
-echo "Dictionary:"
-echo "  - $JISYO_DST"
+echo ""
+
+# Success Summary Card
+echo "${GREEN}✨ ────────────────────────────────────────────────────────── ✨${RESET}"
+echo "${GREEN}   🎉  VLICX EDITOR HAS BEEN SUCCESSFULLY INSTALLED!         ${RESET}"
+echo "${GREEN}✨ ────────────────────────────────────────────────────────── ✨${RESET}"
+echo ""
+echo "   ${CYAN}📍 バイナリ位置${RESET} : ${WHITE}$PREFIX/bin/vlicx${RESET}"
+echo "   ${CYAN}📁 フォルダ起動${RESET} : ${WHITE}vlicx-fo <ディレクトリ>${RESET}"
+echo "   ${CYAN}📄 ファイル起動${RESET} : ${WHITE}vlicx-fi <ファイル>${RESET}"
+echo ""
+echo "   ${MAGENTA}🚀 準備完了！ vlicx-fo コマンドでエディタをお楽しみください。${RESET}"
 echo ""
