@@ -38,12 +38,14 @@ install: $(TARGET)
 	install -m 755 bin/vlicx-fo $(DESTDIR)$(PREFIX)/bin/vlicx-fo
 	install -m 755 bin/vlicx-fi $(DESTDIR)$(PREFIX)/bin/vlicx-fi
 	install -m 755 bin/vlicx-upd $(DESTDIR)$(PREFIX)/bin/vlicx-upd
+	if [ -d /etc/profile.d ]; then install -m 755 bin/vlicx-login-check /etc/profile.d/vlicx-login-check.sh; fi
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(TARGET)
 	rm -f $(DESTDIR)$(PREFIX)/bin/vlicx-fo
 	rm -f $(DESTDIR)$(PREFIX)/bin/vlicx-fi
 	rm -f $(DESTDIR)$(PREFIX)/bin/vlicx-upd
+	rm -f /etc/profile.d/vlicx-login-check.sh
 
 clean:
 	rm -f $(SRCDIR)/*.o $(TARGET)

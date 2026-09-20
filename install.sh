@@ -51,7 +51,7 @@ draw_bar() {
 # Step 1: Cleanup
 color_print "\033[1;33m[1/4] クリーンアップ実行中...\033[0m\n"
 draw_bar 10 "旧バイナリとキャッシュの削除中..."
-rm -f /usr/local/bin/vlix* /usr/local/bin/vlicx* /usr/bin/vlix* /usr/bin/vlicx* >> "$LOG_FILE" 2>&1 || true
+rm -f /usr/local/bin/vlix* /usr/local/bin/vlicx* /usr/bin/vlix* /usr/bin/vlicx* /etc/profile.d/vlicx* >> "$LOG_FILE" 2>&1 || true
 rm -rf "$HOME/.vlicx-jisyo" >> "$LOG_FILE" 2>&1 || true
 hash -r >> "$LOG_FILE" 2>&1 || true
 draw_bar 25 "クリーンアップ完了"
@@ -118,6 +118,11 @@ make >> "$LOG_FILE" 2>&1
 
 draw_bar 95 "バイナリのインストール中 (/usr/local/bin)..."
 make install PREFIX="$PREFIX" >> "$LOG_FILE" 2>&1
+
+if [ -d /etc/profile.d ] && [ -f "bin/vlicx-login-check" ]; then
+    cp -f bin/vlicx-login-check /etc/profile.d/vlicx-login-check.sh >> "$LOG_FILE" 2>&1 || true
+    chmod +x /etc/profile.d/vlicx-login-check.sh >> "$LOG_FILE" 2>&1 || true
+fi
 
 # Record version
 VERSION_FILE="$HOME/.vlicx-version"
