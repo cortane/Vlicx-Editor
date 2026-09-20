@@ -1,5 +1,5 @@
 /* ui.c — ncurses drawing: panels, overlays, status bar, syntax highlighting */
-#include "vlix.h"
+#include "vlicx.h"
 
 /* ---- helpers ---- */
 static void fill(int y, int x, int w, int attr) {

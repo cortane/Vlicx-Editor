@@ -1,5 +1,5 @@
 /* explorer.c — file/folder tree with lazy loading */
-#include "vlix.h"
+#include "vlicx.h"
 
 /* ---- recursive delete (rm -rf) ---- */
 static int rmtree(const char *path) {

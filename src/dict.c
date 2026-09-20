@@ -1,5 +1,5 @@
 /* dict.c — Lightweight Japanese Katakana / Hiragana generator */
-#include "vlix.h"
+#include "vlicx.h"
 
 /* Convert UTF-8 Hiragana string into Katakana string */
 static void hiragana_to_katakana(const char *hira, char *kata, int max_sz) {

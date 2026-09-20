@@ -1,5 +1,5 @@
 /* editor.c — text editor: line-based storage, cursor, selection, search, undo */
-#include "vlix.h"
+#include "vlicx.h"
 
 /* ---- line helpers ---- */
 static void ln_init(EdLine *l) {

@@ -20,47 +20,54 @@ color_print() {
 # Draw Banner
 clear 2>/dev/null || true
 color_print "\n"
-color_print "\033[1;36m+----------------------------------------------------------+\033[0m\n"
-color_print "\033[1;36m|\033[0m  \033[1;35mVLICX EDITOR\033[0m - \033[1;37mAuto Clean Installer & Updater\033[0m          \033[1;36m|\033[0m\n"
-color_print "\033[1;36m|\033[0m  \033[2mLightweight & High-Performance Terminal Editor\033[0m          \033[1;36m|\033[0m\n"
-color_print "\033[1;36m+----------------------------------------------------------+\033[0m\n\n"
+color_print "\033[1;36m+--------------------------------------------------------------------------------+\033[0m\n"
+color_print "\033[1;36m|\033[0m  \033[1;35mVLICX EDITOR\033[0m - \033[1;37mAuto Clean Installer & Updater\033[0m                             \033[1;36m|\033[0m\n"
+color_print "\033[1;36m|\033[0m  \033[2mLightweight & High-Performance C11 Terminal Editor\033[0m                            \033[1;36m|\033[0m\n"
+color_print "\033[1;36m+--------------------------------------------------------------------------------+\033[0m\n\n"
 
-# Progress bar function
+INITIAL_DRAW=0
+
+# Sleek Thin-Vertical Horizontal Gauge UI
 draw_bar() {
     pct=$1
     text=$2
-    cols=30
+    cols=50
     filled=$((pct * cols / 100))
     empty=$((cols - filled))
 
-    bar=""
+    bar_fill=""
     i=0
     while [ $i -lt $filled ]; do
-        bar="${bar}#"
-        i=$((i + 1))
-    done
-    i=0
-    while [ $i -lt $empty ]; do
-        bar="${bar}-"
+        bar_fill="${bar_fill}█"
         i=$((i + 1))
     done
 
-    printf "\r\033[1;36m[%s]\033[0m \033[1;32m%3d%%\033[0m \033[1;37m%s\033[0m \033[K" "$bar" "$pct" "$text"
+    bar_empty=""
+    i=0
+    while [ $i -lt $empty ]; do
+        bar_empty="${bar_empty}━"
+        i=$((i + 1))
+    done
+
+    if [ "$INITIAL_DRAW" -eq 1 ]; then
+        printf "\033[2A\r"
+    fi
+    INITIAL_DRAW=1
+
+    printf "  \033[1;36mゲージ\033[0m     : \033[1;36m▕\033[1;32m%s\033[90m%s\033[1;36m▏\033[0m \033[1;33m%3d%%\033[0m \033[K\n" "$bar_fill" "$bar_empty" "$pct"
+    printf "  \033[1;36mステータス\033[0m : \033[1;37m%-55s\033[0m \033[K\n" "$text"
 }
 
 # Step 1: Cleanup
-color_print "\033[1;33m[1/4] クリーンアップ実行中...\033[0m\n"
-draw_bar 10 "旧バイナリとキャッシュの削除中..."
+draw_bar 10 "[1/4] 旧バイナリとキャッシュの削除中..."
 rm -f /usr/local/bin/vlix* /usr/local/bin/vlicx* /usr/bin/vlix* /usr/bin/vlicx* /etc/profile.d/vlicx* >> "$LOG_FILE" 2>&1 || true
 rm -rf "$HOME/.vlicx-jisyo" >> "$LOG_FILE" 2>&1 || true
 hash -r >> "$LOG_FILE" 2>&1 || true
-draw_bar 25 "クリーンアップ完了"
-color_print "\n"
+draw_bar 25 "[1/4] クリーンアップ完了"
 sleep 0.2
 
 # Step 2: Check Alpine dependencies
-color_print "\n\033[1;33m[2/4] 依存パッケージの確認...\033[0m\n"
-draw_bar 35 "パッケージマネージャの検査中..."
+draw_bar 35 "[2/4] パッケージマネージャの検査中..."
 if command -v apk >/dev/null 2>&1; then
     MISSING_PKGS=""
     for pkg in gcc musl-dev ncurses-dev make curl tar; do
@@ -69,26 +76,24 @@ if command -v apk >/dev/null 2>&1; then
         fi
     done
     if [ -n "$MISSING_PKGS" ]; then
-        draw_bar 45 "不足パッケージを自動導入中 ($MISSING_PKGS)..."
+        draw_bar 45 "[2/4] 不足パッケージを自動導入中 ($MISSING_PKGS)..."
         apk add --no-cache $MISSING_PKGS >> "$LOG_FILE" 2>&1
     fi
 fi
-draw_bar 50 "依存パッケージの準備完了"
-color_print "\n"
+draw_bar 50 "[2/4] 依存パッケージの準備完了"
 sleep 0.2
 
 # Step 3: Source acquisition
-color_print "\n\033[1;33m[3/4] GitHub から最新ソースコード取得中...\033[0m\n"
 TMP_DIR=""
 HERE=""
 
 if [ -f "./src/main.c" ] && [ -f "./Makefile" ]; then
     HERE="$(pwd)"
-    draw_bar 65 "ローカルソースツリーを使用"
+    draw_bar 65 "[3/4] ローカルソースツリーを使用中"
 else
     TMP_DIR="/tmp/vlicx-build-$$"
     mkdir -p "$TMP_DIR"
-    draw_bar 60 "最新アーカイブのダウンロード中..."
+    draw_bar 60 "[3/4] 最新アーカイブのダウンロード中..."
     curl -fsSL "$TAR_URL" | tar -xz -C "$TMP_DIR" >> "$LOG_FILE" 2>&1
 
     MAKEFILE_LOC=$(find "$TMP_DIR" -path "*/vlicx/Makefile" 2>/dev/null | head -n 1)
@@ -102,21 +107,19 @@ else
         color_print "\n\033[1;35mエラー: Makefile が見つかりませんでした。\033[0m\n"
         exit 1
     fi
-    draw_bar 70 "ソースコードの準備完了"
+    draw_bar 70 "[3/4] ソースコードの準備完了"
 fi
-color_print "\n"
 sleep 0.2
 
 # Step 4: Build and Install
-color_print "\n\033[1;33m[4/4] Vlicx のコンパイル & インストール中...\033[0m\n"
 cd "$HERE"
-draw_bar 75 "ビルドディレクトリの再構築中..."
+draw_bar 75 "[4/4] ビルドディレクトリの再構築中..."
 make clean >> "$LOG_FILE" 2>&1
 
-draw_bar 85 "コンパイル中 (C11 + ncursesw)..."
+draw_bar 85 "[4/4] コンパイル中 (C11 + ncursesw)..."
 make >> "$LOG_FILE" 2>&1
 
-draw_bar 95 "バイナリのインストール中 (/usr/local/bin)..."
+draw_bar 95 "[4/4] バイナリのインストール中 (/usr/local/bin)..."
 make install PREFIX="$PREFIX" >> "$LOG_FILE" 2>&1
 
 if [ -d /etc/profile.d ] && [ -f "bin/vlicx-login-check" ]; then
@@ -158,9 +161,9 @@ else
 fi
 
 # Success Summary Card
-color_print "\033[1;32m==========================================================\033[0m\n"
-color_print "\033[1;32m  Vlicx Editor のインストールが完了しました\033[0m\n"
-color_print "\033[1;32m==========================================================\033[0m\n\n"
+color_print "\033[1;32m+--------------------------------------------------------------------------------+\033[0m\n"
+color_print "\033[1;32m|  Vlicx Editor のインストールが完了しました                                      |\033[0m\n"
+color_print "\033[1;32m+--------------------------------------------------------------------------------+\033[0m\n\n"
 color_print "  \033[1;36mバイナリ位置\033[0m   : \033[1;37m$PREFIX/bin/vlicx\033[0m\n"
 color_print "  \033[1;36mフォルダ起動\033[0m   : \033[1;37mvlicx-fo <ディレクトリ>\033[0m\n"
 color_print "  \033[1;36mファイル起動\033[0m   : \033[1;37mvlicx-fi <ファイル>\033[0m\n"

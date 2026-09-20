@@ -1,5 +1,5 @@
 /* config.c — i18n string table, color schemes, settings persistence */
-#include "vlix.h"
+#include "vlicx.h"
 
 /* ===== Color Schemes ===== */
 /* ===== Color Schemes ===== */

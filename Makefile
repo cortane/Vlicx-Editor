@@ -25,7 +25,7 @@ all: $(TARGET)
 $(TARGET): $(OBJECTS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-$(SRCDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/vlix.h
+$(SRCDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/vlicx.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 static:

@@ -1,5 +1,5 @@
 /* main.c — entry point, input handling, main loop */
-#include "vlix.h"
+#include "vlicx.h"
 
 static struct termios g_orig;
 static int g_saved = 0;

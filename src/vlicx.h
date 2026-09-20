@@ -1,6 +1,6 @@
-/* vlix.h — Vlix terminal editor shared header */
-#ifndef VLIX_H
-#define VLIX_H
+/* vlicx.h — Vlicx terminal editor shared header */
+#ifndef VLICX_H
+#define VLICX_H
 
 #define _POSIX_C_SOURCE 200809L
 #define _XOPEN_SOURCE   700
