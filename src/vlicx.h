@@ -218,6 +218,7 @@ typedef struct {
 typedef struct {
     Editor ed; Explorer ex; Config cfg;
     int focus, running, overlay, settings_cur;
+    int is_file_mode;
     char status[MAX_STATUS];
     char *errors[MAX_ERRORS]; int nerr;
     char confirm_name[256];

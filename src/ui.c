@@ -640,10 +640,13 @@ static void draw_convert_popup(App *app, int h, int w) {
     ConvertState *conv = &app->conv;
     if (conv->convert_ncand <= 0) return;
 
-    /* Calculate cursor position on screen */
-    int ew = w / EXPLORER_DIV;
-    if (ew < EXPLORER_MIN_W) ew = EXPLORER_MIN_W;
-    if (ew > w / 2) ew = w / 2;
+    int ew = 0;
+    if (!app->is_file_mode) {
+        ew = w / EXPLORER_DIV;
+        if (ew < EXPLORER_MIN_W) ew = EXPLORER_MIN_W;
+        if (ew > w / 2) ew = w / 2;
+    }
+    int ed_x0 = (ew > 0) ? (ew + 1) : 0;
     Editor *ed = &app->ed;
     int cr = TOPBAR_H + (ed->cy - ed->top);
     const char *txt = (ed->cy < ed->nlines) ? ed->lines[ed->cy].text : "";
@@ -656,7 +659,7 @@ static void draw_convert_popup(App *app, int h, int w) {
         pos += c_bytes;
         col_offset += c_cols;
     }
-    int tx = (ew + 1) + LINENO_W;
+    int tx = ed_x0 + LINENO_W;
     int cc = tx + col_offset;
 
     /* Calculate popup box dimensions */
@@ -684,7 +687,7 @@ static void draw_convert_popup(App *app, int h, int w) {
 
     int box_x = cc;
     if (box_x + bw >= w) box_x = w - bw - 1;
-    if (box_x < ew + 1) box_x = ew + 1;
+    if (box_x < ed_x0) box_x = ed_x0;
 
     /* Draw box background */
     int attr_box = COLOR_PAIR(CP_OVERLAY) | A_BOLD;
@@ -714,14 +717,21 @@ void ui_draw(App *app) {
 
     draw_topbar(app, w);
 
-    int ew = w / EXPLORER_DIV;
-    if (ew < EXPLORER_MIN_W) ew = EXPLORER_MIN_W;
-    if (ew > w / 2) ew = w / 2;
+    int ew = 0;
+    if (!app->is_file_mode) {
+        ew = w / EXPLORER_DIV;
+        if (ew < EXPLORER_MIN_W) ew = EXPLORER_MIN_W;
+        if (ew > w / 2) ew = w / 2;
+    }
     int bh = h - TOPBAR_H - 1;
     if (bh < 1) bh = 1;
 
-    draw_explorer(app, TOPBAR_H, 0, bh, ew);
-    draw_editor(app, TOPBAR_H, ew + 1, bh, w - ew - 1);
+    if (ew > 0) {
+        draw_explorer(app, TOPBAR_H, 0, bh, ew);
+        draw_editor(app, TOPBAR_H, ew + 1, bh, w - ew - 1);
+    } else {
+        draw_editor(app, TOPBAR_H, 0, bh, w);
+    }
     draw_status(app, h - 1, w);
 
     switch (app->overlay) {
@@ -775,7 +785,8 @@ void ui_draw(App *app) {
             pos += c_bytes;
             col_offset += c_cols;
         }
-        int tx = (ew + 1) + LINENO_W;
+        int ed_x0 = (ew > 0) ? (ew + 1) : 0;
+        int tx = ed_x0 + LINENO_W;
         int cc = tx + col_offset;
         if (cc >= w) cc = w - 1;
         if (cr < TOPBAR_H) cr = TOPBAR_H;

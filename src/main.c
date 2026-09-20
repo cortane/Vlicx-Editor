@@ -317,9 +317,14 @@ static void handle_key(App *a, int key) {
         return;
     }
     if (key == 12) {                                          /* ^L */
-        a->focus = a->focus == FOCUS_EDITOR ? FOCUS_EXPLORER : FOCUS_EDITOR;
+        if (a->is_file_mode) {
+            a->is_file_mode = 0;
+            a->focus = FOCUS_EXPLORER;
+        } else {
+            a->focus = (a->focus == FOCUS_EDITOR) ? FOCUS_EXPLORER : FOCUS_EDITOR;
+        }
         snprintf(a->status, MAX_STATUS, tr(S_MSG_FOCUS),
-                 a->focus == FOCUS_EDITOR ? tr(S_WORD_EDITOR) : tr(S_WORD_EXPLORER));
+                 (a->focus == FOCUS_EDITOR) ? tr(S_WORD_EDITOR) : tr(S_WORD_EXPLORER));
         return;
     }
     if (key == 5) { a->overlay = OVL_ERRORS; return; }       /* ^E */
@@ -469,6 +474,7 @@ static void app_init(App *a, const char *path, int is_file) {
     config_load(&a->cfg);
     i18n_set_language(a->cfg.language);
     editor_init(&a->ed);
+    a->is_file_mode = is_file;
     if (is_file) {
         char dir[MAXPATH + MAXPATH];
         snprintf(dir, sizeof(dir), "%s", path);

@@ -21,7 +21,7 @@ color_print() {
 clear 2>/dev/null || true
 color_print "\n"
 color_print "\033[1;36m+--------------------------------------------------------------------------------+\033[0m\n"
-color_print "\033[1;36m|\033[0m  \033[1;35mVLICX EDITOR\033[0m - \033[1;37mAuto Clean Installer & Updater        \033[0m                             \033[1;36m|\033[0m\n"
+color_print "\033[1;36m|\033[0m  \033[1;35mVLICX EDITOR\033[0m - \033[1;37mAuto Clean Installer & Updater       \033[0m                             \033[1;36m|\033[0m\n"
 color_print "\033[1;36m|\033[0m  \033[2mLightweight & High-Performance C11 Terminal Editor\033[0m                            \033[1;36m|\033[0m\n"
 color_print "\033[1;36m+--------------------------------------------------------------------------------+\033[0m\n\n"
 
@@ -162,7 +162,7 @@ fi
 
 # Success Summary Card
 color_print "\033[1;32m+--------------------------------------------------------------------------------+\033[0m\n"
-color_print "\033[1;32m|  Vlicx Editor のインストールが完了しました                                      |\033[0m\n"
+color_print "\033[1;32m|  Vlicx Editor のインストールが完了しました                                     |\033[0m\n"
 color_print "\033[1;32m+--------------------------------------------------------------------------------+\033[0m\n\n"
 color_print "  \033[1;36mバイナリ位置\033[0m   : \033[1;37m$PREFIX/bin/vlicx\033[0m\n"
 color_print "  \033[1;36mドキュメント\033[0m   : \033[1;37m$PREFIX/share/doc/vlicx/README_JA.md\033[0m\n"
