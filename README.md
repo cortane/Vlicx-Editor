@@ -1,134 +1,87 @@
-# Vlix（ヴィリック）— C Edition
+# Vlicx Editor — Lightweight C11 Terminal Text Editor
 
-Linuxライクな操作感を持つ、フォルダ/ファイルエクスプローラー内蔵のターミナルテキストエディタ。
-Pure C + ncurses で実装。外部ライブラリ不要（ncurses のみ）。
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Alpine-green.svg)]()
 
-## ビルド（Alpine Linux）
+**Vlicx Editor** is an ultra-fast, lightweight, high-performance terminal text editor with an integrated dual-pane file explorer. Built with pure **C11** and **ncursesw**, Vlicx delivers zero-latency editing, low memory footprint, and intuitive keyboard navigation for Linux and Alpine Linux environments.
 
-```sh
-apk add gcc musl-dev ncurses-dev make
-make            # 通常ビルド
-make static     # 静的リンク（ncurses-static も必要: apk add ncurses-static）
+---
+
+## ⚡ Quick One-Line Auto Installer & Updater
+
+Run the following command on your Alpine Linux / Linux terminal to automatically install or update Vlicx Editor:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.sh | sh
 ```
 
-## インストール
+---
 
-```sh
-./install.sh              # /usr/local にインストール
-./install.sh ~/.local     # カスタムプレフィックス
+## 🔥 Key Features
+
+- **Blazing Fast**: Written in pure C11 with ncursesw. Zero overhead, near-instantaneous startup.
+- **Integrated Explorer & Dual-Pane UI**: Split-view file explorer tree alongside a line-numbered text editor.
+- **One-Click Auto Updater (`vlicx-upd`)**: Built-in update script to fetch and compile the latest release effortlessly.
+- **Automatic Login Update Banner**: Alerts you upon SSH login whenever a new update is published on GitHub.
+- **Convenient Launch Commands**:
+  - `vlicx-fo <directory>`: Open folder in explorer mode.
+  - `vlicx-fi <filepath>`: Open file directly in editor mode.
+  - `vlicx-upd`: One-click system update.
+- **i18n & Color Schemes**: Multi-language support (English / Japanese) and customizable color themes (Blue Console, Dark, Solar) saved in `~/.vlixrc`.
+- **Keyboard Friendly**: Terminal XON/XOFF flow control managed safely (`Ctrl+S`, `Ctrl+Q` supported).
+
+---
+
+## 🚀 Usage Guide
+
+```bash
+vlicx-fo <folder_path>    # Open folder tree explorer
+vlicx-fi <file_path>      # Open file directly in text editor
+vlicx-upd                 # Update Vlicx Editor to latest GitHub version
 ```
 
-## 使い方
-
-```sh
-vlix-fo <フォルダパス>    # フォルダをExplorerで開く
-vlix-fi <ファイルパス>    # ファイルをエディタで直接開く
+### Examples
+```bash
+vlicx-fo /var/www/localhost/htdocs
+vlicx-fi /etc/hosts
 ```
 
-相対パス・絶対パス両対応：
-```sh
-vlix-fo FFGm
-vlix-fo /root/html
-vlix-fi GRJs
-vlix-fi /root/css/Style.css
-```
+---
 
-## 画面構成
+## ⌨️ Shortcuts & Keybindings
 
-```
-+---------------------------------------------------------+
-|              基本操作一覧（固定・横幅いっぱい）           |
-+----------------------+------------------------------------+
-|  フォルダ内容表示     |                                    |
-|  （Explorer）         |             エディタ                |
-|  ・開閉式フォルダ      |          行番号 + テキスト          |
-|  ・矢印キーで選択      |                                    |
-+----------------------+------------------------------------+
-|  ステータスバー（ファイル名・カーソル位置・メッセージ）    |
-+---------------------------------------------------------+
-```
-
-## ショートカット一覧
-
-| キー | 機能 | 補足 |
+| Key Shortcut | Function | Description |
 |---|---|---|
-| Ctrl+C | Copy | 選択範囲、なければ現在行 |
-| Ctrl+S | Save | XON/XOFF 自動無効化済み |
-| Ctrl+K | Line Clear | 現在行を空に |
-| Ctrl+V | Paste | |
-| Ctrl+Q | Exit | XON/XOFF 自動無効化済み |
-| Alt+C | Color Scheme | 3種類を循環（設定保存） |
-| Ctrl+L | Console Move | Explorer↔エディタ切替 |
-| Alt+T | Search | 選択テキストで検索（ラップアラウンド） |
-| F5 | Selection Mode | 選択開始（Ctrl+1 対応端末あり） |
-| F6 | End Selection | 選択終了、選択は維持 |
-| Alt+S | Vlix Setting | 言語・配色変更（設定ファイル保存） |
-| Ctrl+E | Error Display | |
-| Alt+H | Help | Ctrl+H=BS衝突回避のためAlt+H |
-| Delete | Delete | Explorer時のみ、確認あり |
+| **Ctrl+C** | Copy | Copy selected region, or current line |
+| **Ctrl+V** | Paste | Paste clipboard buffer |
+| **Ctrl+S** | Save | Save current file |
+| **Ctrl+Q** | Exit | Quit editor |
+| **Ctrl+K** | Clear Line | Clear text on current line |
+| **Ctrl+L** | Focus Toggle | Switch focus between Explorer and Editor |
+| **Alt+C** | Color Theme | Cycle themes (Blue Console / Dark / Solar) |
+| **Alt+S** | Preferences | Open Settings modal (Language, Colors) |
+| **Alt+T** | Search | Search text with wrap-around |
+| **F5 / F6** | Selection | Start / End text selection range |
+| **Delete** | Delete File | Delete selected item in Explorer (with prompt) |
 
-### Explorer操作
+---
 
-- `↑` `↓`：選択移動
-- `→` / `Enter`：フォルダ展開 / ファイルをエディタで開く
-- `←` / `Enter`（展開中フォルダ）：折りたたみ
-- `Delete`：選択中を削除（確認ダイアログ表示）
+## 🛠️ Build & Install from Source
 
-## 設定ファイル
-
-`~/.vlixrc` に自動保存：
-```ini
-color_scheme=0
-language=0
+### Dependencies (Alpine Linux)
+```bash
+apk add gcc musl-dev ncurses-dev make curl tar
 ```
 
-- `color_scheme`: 0=Blue Console, 1=Dark, 2=Solar
-- `language`: 0=English, 1=Japanese
-
-Alt+S の設定画面から変更可能。変更は即座に保存され、再起動後も維持。
-
-## 言語設定
-
-Alt+S → "Change language" で English / 日本語 を切り替え。
-全UIメッセージ（ステータスバー、オーバーレイ、ショートカットラベル）が切り替わる。
-
-## ディレクトリ構成
-
-```
-vlicx/
-├── Makefile
-├── install.sh
-├── README.md
-├── bin/
-│   ├── vlix-fo
-│   └── vlix-fi
-└── src/
-    ├── vlix.h        # 共有ヘッダ（全型・定数・宣言）
-    ├── main.c        # エントリポイント・メインループ・入力処理
-    ├── editor.c      # テキストエディタ（行管理・編集・検索）
-    ├── explorer.c    # ファイルエクスプローラー（ツリー管理）
-    ├── ui.c          # ncurses描画（パネル・オーバーレイ・ステータス）
-    └── config.c      # i18n文字列テーブル・設定永続化・配色
+### Manual Compilation
+```bash
+git clone https://github.com/cortane/Vlicx-Editor.git
+cd Vlicx-Editor
+make
+make install
 ```
 
-## Python版からの改善点
+---
 
-| 項目 | Python版 | C版 |
-|---|---|---|
-| 速度 | curses + GC | 直接ncurses、GCなし |
-| 選択モード | Ctrl+F1/F2（非対応） | F5/F6 + Ctrl+1/2（対応端末） |
-| 設定保存 | なし | ~/.vlixrc に永続化 |
-| XON/XOFF | 手動 stty -ixon | 自動無効化（tcsetattr） |
-| Ctrl+H衝突 | 未解決 | Alt+H に変更で回避 |
-| 検索 | 下方向のみ | ラップアラウンド（双方向） |
-| 削除確認 | なし | 確認ダイアログ (y/N) |
-| 言語 | 日本語のみ | EN/JP 切り替え |
-| 行番号 | なし | エディタ左端に表示 |
-| 依存 | Python3 | gcc + ncurses のみ |
-
-## 既知の制限
-
-- **Ctrl+1/Ctrl+2**: 端末によっては送信されない。F5/F6 がフォールバック。
-- **UTF-8入力**: 日本語のIME入力は端末依存。表示（ファイルから読み込み）は対応。
-- **長い行**: 8191バイトで分割される可能性あり。
-- **tmux/screen**: raw() モードの動作が異なる場合あり。
+## 📄 License
+Released under the [MIT License](LICENSE).
