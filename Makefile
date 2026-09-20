@@ -39,6 +39,9 @@ install: $(TARGET)
 	install -m 755 bin/vlicx-fi $(DESTDIR)$(PREFIX)/bin/vlicx-fi
 	install -m 755 bin/vlicx-upd $(DESTDIR)$(PREFIX)/bin/vlicx-upd
 	if [ -d /etc/profile.d ]; then install -m 755 bin/vlicx-login-check /etc/profile.d/vlicx-login-check.sh; fi
+	install -d $(DESTDIR)$(PREFIX)/share/doc/vlicx
+	install -m 644 README.md $(DESTDIR)$(PREFIX)/share/doc/vlicx/README.md
+	install -m 644 README_JA.md $(DESTDIR)$(PREFIX)/share/doc/vlicx/README_JA.md
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(TARGET)
@@ -46,6 +49,7 @@ uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/vlicx-fi
 	rm -f $(DESTDIR)$(PREFIX)/bin/vlicx-upd
 	rm -f /etc/profile.d/vlicx-login-check.sh
+	rm -rf $(DESTDIR)$(PREFIX)/share/doc/vlicx
 
 clean:
 	rm -f $(SRCDIR)/*.o $(TARGET)
