@@ -37,11 +37,13 @@ install: $(TARGET)
 	install -m 755 $(TARGET) $(DESTDIR)$(PREFIX)/bin/$(TARGET)
 	install -m 755 bin/vlicx-fo $(DESTDIR)$(PREFIX)/bin/vlicx-fo
 	install -m 755 bin/vlicx-fi $(DESTDIR)$(PREFIX)/bin/vlicx-fi
+	install -m 755 bin/vlicx-upd $(DESTDIR)$(PREFIX)/bin/vlicx-upd
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(TARGET)
 	rm -f $(DESTDIR)$(PREFIX)/bin/vlicx-fo
 	rm -f $(DESTDIR)$(PREFIX)/bin/vlicx-fi
+	rm -f $(DESTDIR)$(PREFIX)/bin/vlicx-upd
 
 clean:
 	rm -f $(SRCDIR)/*.o $(TARGET)

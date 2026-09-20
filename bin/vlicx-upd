@@ -1,0 +1,3 @@
+#!/bin/sh
+# vlicx-upd — Vlicx Editor One-Click Auto Updater
+exec curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.sh | sh
