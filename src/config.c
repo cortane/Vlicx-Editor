@@ -132,16 +132,16 @@ void ui_init_colors(int code_idx, int ui_idx) {
     const ColorScheme *cs = &g_schemes[code_idx];
     const ColorScheme *us = &g_schemes[ui_idx];
 
-    /* UI panel colors (use UI scheme) */
-    init_pair(CP_TOPBAR,         COLOR_BLACK, us->accent);
-    init_pair(CP_EXPLORER,       us->fg,       COLOR_BLACK);
-    init_pair(CP_EXPLORER_SEL,   COLOR_BLACK, us->accent);
+    /* UI panel colors (Fixed WHITE text for high contrast & legibility) */
+    init_pair(CP_TOPBAR,         COLOR_WHITE, us->accent);
+    init_pair(CP_EXPLORER,       COLOR_WHITE, COLOR_BLACK);
+    init_pair(CP_EXPLORER_SEL,   COLOR_WHITE, us->accent);
     init_pair(CP_EDITOR,         safe_color(us->var_fg, COLOR_WHITE), COLOR_BLACK);
-    init_pair(CP_ACCENT,         us->accent,   us->bg);
+    init_pair(CP_ACCENT,         COLOR_WHITE, us->accent);
     init_pair(CP_OVERLAY,        COLOR_WHITE, COLOR_BLUE);
     init_pair(CP_SELECTION,      COLOR_WHITE, COLOR_BLUE);
     init_pair(CP_LINENO,         safe_color(us->accent, COLOR_CYAN), COLOR_BLACK);
-    init_pair(CP_STATUS,         us->fg,       us->bg);
+    init_pair(CP_STATUS,         COLOR_WHITE, us->bg);
     init_pair(CP_CURLINE,        COLOR_YELLOW, COLOR_BLACK);
 
     /* Coding syntax colors (use Code scheme) */

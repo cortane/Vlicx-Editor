@@ -53,8 +53,19 @@ else
     TMP_DIR="/tmp/vlicx-build-$$"
     mkdir -p "$TMP_DIR"
     echo "Downloading latest Vlicx source archive from GitHub..."
-    curl -fsSL "$TAR_URL" | tar -xzv -C "$TMP_DIR" --strip-components=1
-    HERE="$TMP_DIR"
+    curl -fsSL "$TAR_URL" | tar -xzv -C "$TMP_DIR"
+    MAKEFILE_LOC=$(find "$TMP_DIR" -path "*/vlicx/Makefile" 2>/dev/null | head -n 1)
+    if [ -z "$MAKEFILE_LOC" ]; then
+        MAKEFILE_LOC=$(find "$TMP_DIR" -name "Makefile" 2>/dev/null | head -n 1)
+    fi
+    if [ -n "$MAKEFILE_LOC" ]; then
+        HERE=$(dirname "$MAKEFILE_LOC")
+    fi
+    if [ -z "$HERE" ] || [ ! -f "$HERE/Makefile" ]; then
+        echo "Error: Could not locate Makefile in downloaded archive."
+        exit 1
+    fi
+    echo "Located source tree at: $HERE"
 fi
 
 # Step 4: Build and Install

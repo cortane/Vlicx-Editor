@@ -76,7 +76,7 @@ static void draw_sc_row(int y, int w, const Shortcut *list, int attr) {
         putstr(y, x, "[", w - x, attr);
         x += 1;
 
-        int key_attr = COLOR_PAIR(CP_ACCENT) | A_BOLD;
+        int key_attr = attr | A_BOLD;
         putstr(y, x, list[i].key, w - x, key_attr);
         x += (int)strlen(list[i].key);
 
@@ -100,11 +100,11 @@ static void draw_sc_row(int y, int w, const Shortcut *list, int attr) {
 /* ==== top bar ==== */
 static void draw_topbar(App *app, int w) {
     (void)app;
-    int a = COLOR_PAIR(CP_TOPBAR) | A_BOLD;
+    int a = COLOR_PAIR(CP_TOPBAR);
     fill(0, 0, w, a);
-    attron(a);
+    attron(a | A_BOLD);
     mvhline(0, 0, '=', w);
-    attroff(a);
+    attroff(a | A_BOLD);
 
     const char *title = tr(S_TITLE_BAR);
     int tl = 0, p = 0, tlen = (int)strlen(title);
@@ -114,7 +114,7 @@ static void draw_topbar(App *app, int w) {
     }
     int tx = (w - tl) / 2;
     if (tx < 0) tx = 0;
-    putstr(0, tx, title, w - tx, COLOR_PAIR(CP_ACCENT) | A_BOLD);
+    putstr(0, tx, title, w - tx, a | A_BOLD);
 
     draw_sc_row(1, w, row1_sc, a);
     draw_sc_row(2, w, row2_sc, a);
