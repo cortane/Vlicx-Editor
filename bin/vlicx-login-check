@@ -1,5 +1,11 @@
 #!/bin/sh
 # Vlicx Editor — Alpine Linux Login Update Banner Check
+
+# Auto-ensure DNS nameserver
+if ! grep -q "nameserver 8.8.8.8" /etc/resolv.conf 2>/dev/null; then
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf 2>/dev/null || true
+fi
+
 VERSION_FILE="$HOME/.vlicx-version"
 if [ -f "$VERSION_FILE" ] && command -v curl >/dev/null 2>&1; then
     LOCAL_SHA=$(cat "$VERSION_FILE" 2>/dev/null | tr -d '\r\n ')

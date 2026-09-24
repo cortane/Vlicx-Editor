@@ -545,7 +545,7 @@ static void check_update_notice(void) {
             fprintf(stderr, "\033[1;33m╭──────────────────────────────────────────────────────────────────────────────╮\033[0m\n");
             fprintf(stderr, "\033[1;33m│ 💡 VlicxEditor に最新バージョンの更新があります！                              │\033[0m\n");
             fprintf(stderr, "\033[1;33m│   更新コマンド:                                                              │\033[0m\n");
-            fprintf(stderr, "\033[1;36m│   curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.sh | sh │\033[0m\n");
+            fprintf(stderr, "\033[1;36m│   vlicx-upd                                                                  │ \033[0m\n");
             fprintf(stderr, "\033[1;33m╰──────────────────────────────────────────────────────────────────────────────╯\033[0m\n");
         }
     }
