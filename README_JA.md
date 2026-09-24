@@ -7,7 +7,7 @@
 
 ---
 
-## ⚡ 1行ワンタッチ自動インストール & 更新
+##  1行ワンタッチ自動インストール & 更新
 
 Alpine Linux や Linux のターミナルで以下の1行を実行するだけで、インストールおよび最新版へのアップデートが完了します。
 
@@ -17,7 +17,7 @@ curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.s
 
 ---
 
-## 🔥 主な特徴
+##  主な特徴
 
 - **圧倒的な爆速動作**: Pure C11 + ncursesw 実装。ガベージコレクションなし、超低メモリ消費。
 - **2画面エクスプローラー統合**: 左側に折りたたみ可能なディレクトリツリー、右側にエディタを配置。
@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.s
 
 ---
 
-## 🚀 使い方
+##  使い方
 
 ```bash
 vlicx-fo <フォルダパス>    # フォルダツリーを開く

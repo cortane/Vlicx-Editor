@@ -7,7 +7,7 @@
 
 ---
 
-## ⚡ Quick One-Line Auto Installer & Updater
+##  Quick One-Line Auto Installer & Updater
 
 Run the following command on your Alpine Linux / Linux terminal to automatically install or update Vlicx Editor:
 
@@ -17,7 +17,7 @@ curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.s
 
 ---
 
-## 🔥 Key Features
+##  Key Features
 
 - **Blazing Fast**: Written in pure C11 with ncursesw. Zero overhead, near-instantaneous startup.
 - **Integrated Explorer & Dual-Pane UI**: Split-view file explorer tree alongside a line-numbered text editor.
@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/cortane/Vlicx-Editor/main/install.s
 
 ---
 
-## 🚀 Usage Guide
+##  Usage Guide
 
 ```bash
 vlicx-fo <folder_path>    # Open folder tree explorer
@@ -48,7 +48,7 @@ vlicx-fi /etc/hosts
 
 ---
 
-## ⌨️ Shortcuts & Keybindings
+## Shortcuts & Keybindings
 
 | Key Shortcut | Function | Description |
 |---|---|---|
@@ -66,7 +66,7 @@ vlicx-fi /etc/hosts
 
 ---
 
-## 🛠️ Build & Install from Source
+##  Build & Install from Source
 
 ### Dependencies (Alpine Linux)
 ```bash
@@ -83,5 +83,5 @@ make install
 
 ---
 
-## 📄 License
+##  License
 Released under the [MIT License](LICENSE).
